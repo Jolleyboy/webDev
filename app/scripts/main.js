@@ -1,8 +1,5 @@
-(function() {
-  var change;
+var change;
 
-  change = function() {
-    return $("#content").html("CoffeeScript is fun.");
-  };
-
-}).call(this);
+change = function() {
+  return $("#content").html("CoffeeScript is fun.  Right?!?");
+};

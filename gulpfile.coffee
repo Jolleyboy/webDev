@@ -27,12 +27,13 @@ livereload   = require 'gulp-livereload'
 shell        = require 'gulp-shell'
 stylus       = (opts) -> accord 'stylus', opts
 
-#change this to the folder that serves your local webpages.
+#Change this to the folder that serves your local webpages.
 #this is where you want to setup your git repo for the class
 #as well.
-serverDir = '/Library/WebServer/Documents'
+serverDir = '/Library/WebServer/Documents/'
 
-#you shouldn't need to change these.
+#You shouldn't need to change these.
+#This is where the source files are located. 
 src = 
   index:        'app/index.html'
   html:         'app/views/*.html'
@@ -45,7 +46,8 @@ src =
   vendor:       'app/vendor/*.js' 
   stylusImport: 'app/styles/imports/*'
 
-#you shouldn't need to change these either.
+#You shouldn't need to change these either.
+#This is where your files end up.
 dest = 
   index:   serverDir
   html:    serverDir
@@ -111,7 +113,7 @@ gulp.task 'styles', ->
 #Add all of your changes and push them to your git repo
 #located at serverDir
 gulp.task 'git', shell.task [
-    'cd' +  serverDir + ' && git add . && git commit -m \"Gulp Commit\" && git push'
+    'sleep .25 && cd ' +  serverDir + ' && git add --all && git commit -m \"Gulp Commit\" && git push'
   ]
 
 #This watches for changes 
