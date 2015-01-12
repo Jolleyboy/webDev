@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Hello World
+  div
+    button#gather Gather
+    progress#gatherProgress
+  div
+    button#hunt(onclick="change();") Hunt
+    progress#huntProgress
+  #content
+    p check it out guys.  It is easy!!!!
+  <?php echo "This was from php?"; ?>
+  <?php echo "It didn't quite make it"; ?>
+  include map
