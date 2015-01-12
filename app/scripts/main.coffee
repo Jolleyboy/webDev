@@ -1,2 +1,3 @@
+#here is how you write a function in coffeescript
 change = -> 
-  $("#content").html "I rule the fishes!"
+  $("#content").html "CoffeeScript is fun."

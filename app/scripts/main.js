@@ -1,5 +1,8 @@
-var change;
+(function() {
+  var change;
 
-change = function() {
-  return $("#content").html("I rule the fishes!");
-};
+  change = function() {
+    return $("#content").html("CoffeeScript is fun.");
+  };
+
+}).call(this);
