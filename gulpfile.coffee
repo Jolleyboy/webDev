@@ -1,11 +1,12 @@
 #Change this to the folder that serves your local webpages.
 #this is where you want to setup your git repo for the class
-#as well.
+#as well. 
 serverDir = '/Library/WebServer/Documents/'
 
 #Don't change these
 gulp         = require 'gulp'
 gutil        = require 'gulp-util'
+plumber      = require 'gulp-plumber'
 accord       = require 'gulp-accord'
 autoprefixer = require 'gulp-autoprefixer'
 axis         = require 'axis-css'
@@ -46,9 +47,15 @@ dest =
   php:     serverDir
   server:  serverDir + "**/*"
 
+onError = (err) ->
+  gutil.beep()
+  console.log err
+
 #Change jade into html
 gulp.task 'jade', (event) -> 
   gulp.src src.jade
+  .pipe plumber
+    errorHandler: onError
   .pipe jade
     #change this to false for production
     pretty: true
@@ -63,6 +70,8 @@ gulp.task 'jshint', ->
 #Concatenate all of your javascript files into one file
 gulp.task 'prepJS', ->
   gulp.src [src.js, src.vendor]
+  .pipe plumber
+    errorHandler: onError
   .pipe concat 'all.js'
   #uncomment this for production
   #.pipe uglify()
@@ -71,6 +80,8 @@ gulp.task 'prepJS', ->
 #Change coffeescript to javascript
 gulp.task 'coffee', ->
   gulp.src src.coffee
+  .pipe plumber
+    errorHandler: onError
   .pipe coffee
     bare: true
   .on 'error', gutil.log
@@ -79,6 +90,8 @@ gulp.task 'coffee', ->
 #Change stylus to CSS3
 gulp.task 'styles', ->
   gulp.src src.stylus
+  .pipe plumber
+    errorHandler: onError
   .pipe stylus
   #these are each plugins for stylus. Google them, and profit.
     use: [
@@ -100,6 +113,8 @@ gulp.task 'styles', ->
 #optimize your images!
 gulp.task 'images', (cb) ->
     gulp.src src.img
+    .pipe plumber
+    errorHandler: onError
     .pipe imageop
       optimizationLevel: 5,
       progressive: true,
@@ -118,6 +133,8 @@ gulp.task 'git', shell.task [
 gulp.task 'reload', ->
   gulp.src dest.server,
     read: false
+  .pipe plumber
+    errorHandler: onError
   .pipe watch(dest.server)
   .pipe livereload()
 
