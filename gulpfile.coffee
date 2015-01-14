@@ -29,6 +29,8 @@ stylus       = (opts) -> accord 'stylus', opts
 #You shouldn't need to change these.
 #This is where the source files are located. 
 src = 
+  html:         'app/html/**/*.html'
+  css:          'app/css/**/*.css'
   jade:         'app/jade/**/*.jade'
   coffee:       'app/scripts/**/*.coffee'
   js:           'app/scripts/**/*.js'
@@ -41,7 +43,6 @@ src =
 #This is where your files end up.
 dest = 
   html:    serverDir
-  css:     serverDir + "css/"
   js:      serverDir + "js/"
   img:     serverDir + "images/"
   php:     serverDir
@@ -138,6 +139,7 @@ gulp.task 'reload', ->
   .pipe watch(dest.server)
   .pipe livereload()
 
+gulp.task 
 #This watches for changes 
 gulp.task 'default', ->
   livereload.listen()
