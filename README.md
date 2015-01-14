@@ -2,7 +2,7 @@ WebDev
 ======
 
 Hello fellow web developers!
-WebDev is designed to make web development a breeze by making use of automatic refreshing of the browser and by utilizing modern preprocessing for HTML5, CSS3 and Javascript. It also features automatic git pushes on file saves and automagic image optimization.  Spend less time messing with your tools and more time making beautiful web pages.
+WebDev is designed to make web development a breeze by making use of automatic browser refreshing, and by utilizing modern preprocessing for HTML5, CSS3 and Javascript. It also features automatic git pushing and automagic image optimization.  Spend less time messing with your tools and more time making beautiful web pages.
 
 ##Prerequisites:
 * Local webserver installed. I recommend [XAMPP](https://www.apachefriends.org/download.html)
@@ -34,4 +34,3 @@ That's it!  You're now setup to use:
 * [CoffeeScript](http://coffeescript.org/) 
 
 These are processed into HTML5, CSS3, and Javascript respectively. All you need do is edit a files (found in app/name-of-file-type).  When you save all of the processing, updating, linting, etc is done for you. When you save, your changes automatically reload the browser for easy development.  Images are also optimized for the web when added to app/images.
-
