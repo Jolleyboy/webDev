@@ -6,7 +6,6 @@ serverDir = '/Library/WebServer/Documents/'
 #Don't change these
 gulp         = require 'gulp'
 gutil        = require 'gulp-util'
-image        = require 'gulp-image'
 accord       = require 'gulp-accord'
 autoprefixer = require 'gulp-autoprefixer'
 axis         = require 'axis-css'
@@ -23,6 +22,7 @@ clean        = require 'gulp-clean'
 livereload   = require 'gulp-livereload'
 shell        = require 'gulp-shell'
 watch        = require 'gulp-watch'
+imageop      = require 'gulp-image-optimization'
 stylus       = (opts) -> accord 'stylus', opts
 
 #You shouldn't need to change these.
@@ -98,10 +98,15 @@ gulp.task 'styles', ->
   .pipe livereload()
 
 #optimize your images!
-gulp.task 'images', ->
-  gulp.src src.img
-  .pipe (image())
-  .pipe gulp.dest dest.img
+gulp.task 'images', (cb) ->
+    gulp.src src.img
+    .pipe imageop
+      optimizationLevel: 5,
+      progressive: true,
+      interlaced: true
+    .pipe gulp.dest dest.img
+    .on 'end', cb
+    .on 'error', cb
 
 #Add all of your changes and push them to your git repo
 #located at serverDir
