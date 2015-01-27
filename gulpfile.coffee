@@ -3,6 +3,10 @@
 #as well. 
 serverDir = '/Library/WebServer/Documents/'
 
+#Change this to the URL you type in your browser to view 
+#your webserver.  This will typically be 'localhost'
+localServerURL = "cs313.dev"
+
 #Don't change these
 gulp         = require 'gulp'
 gutil        = require 'gulp-util'
@@ -21,17 +25,15 @@ concat       = require 'gulp-concat'
 uglify       = require 'gulp-uglify'
 jade         = require 'gulp-jade'
 coffee       = require 'gulp-coffee'
+coffeelint   = require 'gulp-coffeelint'
 shell        = require 'gulp-shell'
 watch        = require 'gulp-watch'
 imagemin     = require 'gulp-imagemin'
 pngquant     = require 'imagemin-pngquant'
-runSequence  = require 'run-sequence'
-git          = require 'gulp-git'
 cached       = require 'gulp-cached'
 gulpif       = require 'gulp-if'
 filter       = require 'gulp-filter'
 jadeInh      = require 'gulp-jade-inheritance'
-addsrc       = require 'gulp-add-src'
 browserSync  = require 'browser-sync'
 sourcemaps   = require 'gulp-sourcemaps'
 stylus       = (opts) -> accord 'stylus', opts
@@ -83,19 +85,16 @@ gulp.task 'jade', (event) ->
     #change this to false for production
     pretty: true
   .pipe gulp.dest dest.html
-  
-# #lint your javascript!! Useful for finding errors
-# gulp.task 'jshint', ->
-#   gulp.src src.js
-#     .pipe jshint()
-#     .pipe jshint.reporter 'default'
-  
+    
 #Change coffeescript to javascript
 gulp.task 'coffee', ->
   gulp.src src.coffee,
     base: 'app/scripts'
   .pipe plumber
     errorHandler: onError
+  .pipe coffeelint
+    optFile: 'coffeelint.json'
+  .pipe coffeelint.reporter()
   .pipe sourcemaps.init()
   .pipe coffee
     bare: true
@@ -130,8 +129,6 @@ gulp.task 'stylus', ->
   .pipe concat 'main.css'
   .pipe sourcemaps.write()    
   .pipe gulp.dest dest.css
-  .pipe browserSync.reload
-    stream: true
 
 #optimize your images!
 gulp.task 'images', ->
@@ -159,19 +156,29 @@ gulp.task 'php', ->
     base: 'app/php'
   .pipe gulp.dest dest.php
   
+#this might be redundant
 gulp.task 'setWatch', ->
   global.isWatching = true
 
+#browserSync can watch on its own.
 gulp.task 'browser-sync', ->
   browserSync
-    proxy: "cs313.dev"
+    files: [
+      serverDir + '**/*.html'
+      serverDir + '**/*.css'
+      serverDir + '**/*.js'
+      serverDir + '**/*.png'
+      serverDir + '**/*.jpg'
+      serverDir + '**/*.php'
+    ]
+    proxy: localServerURL
     notify: false
 
 #This watches for changes 
 gulp.task 'default', ['setWatch', 'browser-sync'], ->
-  gulp.watch src.img, ['images', browserSync.reload]
+  gulp.watch src.img, ['images']
   gulp.watch src.stylus, ['stylus']
-  gulp.watch src.coffee, ['coffee', browserSync.reload]
-  gulp.watch src.jade, ['jade', browserSync.reload]
-  gulp.watch src.php, ['php', browserSync.reload]
+  gulp.watch src.coffee, ['coffee']
+  gulp.watch src.jade, ['jade']
+  gulp.watch src.php, ['php']
   
