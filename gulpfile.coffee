@@ -74,6 +74,8 @@ gulp.task 'jade', (event) ->
   .pipe plugins.jade
     #change this to false for production
     pretty: true
+  .pipe plugins.rename
+    extname: '.php'
   .pipe gulp.dest dest.html
 
 #Change coffeescript to javascript
