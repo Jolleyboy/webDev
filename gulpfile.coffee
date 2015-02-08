@@ -39,7 +39,7 @@ src =
   img:          'app/images/**/*'
   vendor:       'app/vendor/**/*.js' 
   stylusImport: 'app/styles/imports/*.styl'
-  php:          'app/php/**/*.php'
+  php:          'app/files_php/**/*.php'
   bower:        'bower_components/**/*.min.js'
 #You shouldn't need to change these either.
 #This is where your files end up.

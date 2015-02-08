@@ -9,15 +9,15 @@ WebDev is designed to make web development a breeze by making use of automatic b
 * Node.js installed and in your path. [Download](http://nodejs.org/download/)
 
 ##How to Setup:
-* Clone this project, and open cmd/terminal in the repo directory
-* type `npm -i` into the terminal and hit enter
+* Clone this repo `git clone --depth=1 https://github.com/jolleyboy/webDev myProjectName && rm -rf !$/.git`
+* Open cmd/terminal in the directory of your project
+* Type `npm -i` into the terminal and hit enter
 * This installs all of the gulp plugins required for this project.
 You will only need to run this command the first time.
 *Edit gulpfile.coffee and change the serverDir variable to the directory your webserver is serving.
 * type `gulp` into the terminal and hit enter. Leave it running in the background.
 * Edit and save app/jade/index.jade, app/scripts/main.coffee and
 * Init a new repo in the directory your webserver is serving and set it up with GitHub.
-
 
 ##How to use:
 * Open cmd/terminal in the repo directory
