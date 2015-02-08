@@ -1,0 +1,7 @@
+{
+  "name": "webDev",
+  "dependencies": {
+    "jquery": "~2.1.3",
+    "angularjs": "~1.3.12"
+  }
+}

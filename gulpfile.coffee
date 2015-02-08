@@ -1,42 +1,31 @@
 #Change this to the folder that serves your local webpages.
 #this is where you want to setup your git repo for the class
 #as well. 
-serverDir = '/Library/WebServer/Documents/'
+serverDir = '/PATH/TO/WEBSERVER/'
 
 #Change this to the URL you type in your browser to view 
 #your webserver.  This will typically be 'localhost'
-localServerURL = "cs313.dev"
+localServerURL = "localhost"
 
 #Don't change these
-gulp         = require 'gulp'
-gutil        = require 'gulp-util'
-plumber      = require 'gulp-plumber'
-chmod        = require 'gulp-chmod'
-changed      = require 'gulp-changed'
-accord       = require 'gulp-accord'
-autoprefixer = require 'gulp-autoprefixer'
-axis         = require 'axis'
-rupture      = require 'rupture'
-nib          = require 'nib'
-jeet         = require 'jeet'
-axis         = require 'axis'
-jshint       = require 'gulp-jshint'
-concat       = require 'gulp-concat'
-uglify       = require 'gulp-uglify'
-jade         = require 'gulp-jade'
-coffee       = require 'gulp-coffee'
-coffeelint   = require 'gulp-coffeelint'
-shell        = require 'gulp-shell'
-watch        = require 'gulp-watch'
-imagemin     = require 'gulp-imagemin'
-pngquant     = require 'imagemin-pngquant'
-cached       = require 'gulp-cached'
-gulpif       = require 'gulp-if'
-filter       = require 'gulp-filter'
-jadeInh      = require 'gulp-jade-inheritance'
-browserSync  = require 'browser-sync'
-sourcemaps   = require 'gulp-sourcemaps'
-stylus       = (opts) -> accord 'stylus', opts
+gulp        = require 'gulp'
+loadPlugins = require 'gulp-load-plugins'
+plugins     = loadPlugins
+  pattern: [
+    'gulp-*'
+    'gulp.*' 
+    'main-bower-files'
+    'axis'
+    'rupture'
+    'nib'
+    'jeet'
+    'browser-sync'
+    'imagemin-pngquant'
+    'run-sequence'
+    ]
+  replaceString: /\bgulp[\-.]/
+
+stylus       = (opts) -> plugins.accord 'stylus', opts
 
 #You shouldn't need to change these.
 #This is where the source files are located. 
@@ -51,6 +40,7 @@ src =
   vendor:       'app/vendor/**/*.js' 
   stylusImport: 'app/styles/imports/*.styl'
   php:          'app/php/**/*.php'
+  bower:        'bower_components/**/*.min.js'
 #You shouldn't need to change these either.
 #This is where your files end up.
 dest = 
@@ -63,90 +53,111 @@ dest =
 
 #My Error Handler
 onError = (err) ->
-  displayErr = gutil.colors.red(err)
-  gutil.log displayErr
-  gutil.beep()
+  displayErr = plugins.util.colors.red(err)
+  plugins.util.log displayErr
+  plugins.util.beep()
   this.emit('end')
 
 #Change jade into html
 gulp.task 'jade', (event) -> 
   gulp.src src.jade,
     base: 'app/jade/'
-  .pipe changed dest.html,
+  .pipe plugins.changed dest.html,
     extension: '.html'
-  .pipe plumber
+  .pipe plugins.plumber
     errorHandler: onError
-  .pipe gulpif global.isWatching, cached 'jade'
-  .pipe jadeInh
+  .pipe plugins.if global.isWatching, plugins.cached 'jade'
+  .pipe plugins.jadeInheritance
     basedir: 'app/jade/'
-  .pipe filter (file) ->
+  .pipe plugins.filter (file) ->
     return !/\/_/.test(file.path) or !/_/.test(file.relative)
-  .pipe jade
+  .pipe plugins.jade
     #change this to false for production
     pretty: true
   .pipe gulp.dest dest.html
-    
+
 #Change coffeescript to javascript
 gulp.task 'coffee', ->
   gulp.src src.coffee,
     base: 'app/scripts'
-  .pipe plumber
+  .pipe plugins.cached 'coffee'
+  .pipe plugins.plumber
     errorHandler: onError
-  .pipe coffeelint
+  .pipe plugins.coffeelint
     optFile: 'coffeelint.json'
-  .pipe coffeelint.reporter()
-  .pipe sourcemaps.init()
-  .pipe coffee
+  .pipe plugins.coffeelint.reporter()
+  .pipe plugins.sourcemaps.init()
+  .pipe plugins.coffee
     bare: true
-  .pipe uglify()
-  .pipe concat 'all.js'
-  .pipe sourcemaps.write()
-  .pipe chmod 755
+  .pipe plugins.uglify()
+  .pipe plugins.remember 'coffee'
+  .pipe plugins.concat 'all.js'
+  .pipe plugins.sourcemaps.write()
+  .pipe plugins.chmod 755
   .pipe gulp.dest dest.js
-  
+
+#Add our vendor javascript stuff in to our JS file
+gulp.task 'vendor', ->
+  gulp.src [src.bower, dest.js + '*.js']
+  .pipe plugins.cached 'vendor'
+  .pipe plugins.plumber
+    errorHandler: onError
+  .pipe plugins.sourcemaps.init loadMaps:true
+  .pipe plugins.uglify()
+  .pipe plugins.remember 'vendor'
+  .pipe plugins.concat 'all.js'
+  .pipe plugins.sourcemaps.write()
+  .pipe gulp.dest dest.js
+
+#Bundle your vendor files in
+gulp.task 'bundleJavaScript', ->
+  plugins.runSequence 'coffee', 'vendor'
+
 #Change stylus to CSS3
 gulp.task 'stylus', ->
   gulp.src [src.stylus, src.stylusImport],
     base: 'app/styles/'
-  .pipe plumber
+  .pipe plugins.cached 'stylus'
+  .pipe plugins.plumber
     errorHandler: onError
-  .pipe sourcemaps.init()
+  .pipe plugins.sourcemaps.init()
   .pipe stylus
   #these are each plugins for stylus. Google them, and profit.
     use: [
-       nib()
-       jeet()
-       rupture()
-       axis()
+       plugins.nib()
+       plugins.jeet()
+       plugins.rupture()
+       plugins.axis()
     ]
     import:[src.stylusImport]
   .on 'error', onError 
   #no more vender prefixing! Hurray!
-  .pipe autoprefixer
+  .pipe plugins.autoprefixer
     browsers: ['last 2 versions']
     cascade: true
-  #concatenate all of your CSS files into one file
-  .pipe concat 'main.css'
-  .pipe sourcemaps.write()    
+  #plugins.concatenate all of your CSS files into one file
+  .pipe plugins.remember 'stylus'
+  .pipe plugins.concat 'main.css'
+  .pipe plugins.sourcemaps.write()    
   .pipe gulp.dest dest.css
 
 #optimize your images!
 gulp.task 'images', ->
     gulp.src src.img,
       base: 'app/images'
-    .pipe(changed(dest.img))
-    .pipe imagemin
+    .pipe plugins.cached 'images'
+    .pipe plugins.imagemin
       optimizationLevel: 7
       progressive: true
       interlaced: true
       svgoPlugins: [removeViewBox: false]
-      use: [pngquant()]
-    .pipe chmod 755
+      use: [plugins.imagemin-pngquant()]
+    .pipe plugins.chmod 755
     .pipe gulp.dest dest.img
     
 #Add all of your changes and push them to your git repo
 #located at serverDir
-gulp.task 'git', shell.task [
+gulp.task 'git', plugins.shell.task [
     'sleep .1 && cd ' +  serverDir + ' && git add --all && git commit -m \"Gulp Commit\" && git push'
   ]
 
@@ -162,7 +173,7 @@ gulp.task 'setWatch', ->
 
 #browserSync can watch on its own.
 gulp.task 'browser-sync', ->
-  browserSync
+  plugins.browserSync
     files: [
       serverDir + '**/*.html'
       serverDir + '**/*.css'
@@ -176,9 +187,30 @@ gulp.task 'browser-sync', ->
 
 #This watches for changes 
 gulp.task 'default', ['setWatch', 'browser-sync'], ->
-  gulp.watch src.img, ['images']
-  gulp.watch src.stylus, ['stylus']
-  gulp.watch src.coffee, ['coffee']
-  gulp.watch src.jade, ['jade']
+  imgWatch = gulp.watch src.img, ['images']
+  cssWatch = gulp.watch src.stylus, ['stylus']
+  jsWatch  = gulp.watch src.coffee, ['bundleJavaScript']
+  jadeWatch= gulp.watch src.jade, ['jade']
   gulp.watch src.php, ['php']
   
+  imgWatch.on 'change', (event) ->
+    if event.type is 'deleted'
+      delete plugins.cached.caches['images'][event.path]
+      plugins.remember.forget 'images', event.path 
+
+  cssWatch.on 'change', (event) ->
+    if event.type is 'deleted'
+      delete plugins.cached.caches['stylus'][event.path]
+      plugins.remember.forget 'stylus', event.path
+  
+  jsWatch.on 'change', (event) ->
+    if event.type is 'deleted'
+      delete plugins.cached.caches['vendor'][event.path]
+      plugins.remember.forget 'vendor', event.path
+      delete plugins.cached.caches['coffee'][event.path]
+      plugins.remember.forget 'coffee', event.path
+  
+  jadeWatch.on 'change', (event) ->
+    if event.type is 'deleted'
+      delete plugins.cached.caches['jade'][event.path]
+      plugins.remember.forget 'jade', event.path
