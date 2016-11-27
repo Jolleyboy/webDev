@@ -1,6 +1,16 @@
 WebDev
 ======
 
+*** Warning ***
+This is several years old and should not be used.
+I recommend a webpack based setup.  Maybe someday I'll generalize and post my webpack setup here.
+
+
+===
+
+
+
+
 Hello fellow web developers!
 WebDev is designed to make web development a breeze by making use of automatic browser refreshing, and by utilizing modern preprocessing for HTML5, CSS3 and Javascript. It also features automatic git pushing and automagic image optimization.  Spend less time messing with your tools and more time making beautiful web pages.
 
